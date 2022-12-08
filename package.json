@@ -1,0 +1,24 @@
+{
+  "name": "atm-machine",
+  "version": "1.0.0",
+  "description": "My special “ATM Machine” which accepts any required amount and returns an optimized response",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yaarash/atm-machine.git"
+  },
+  "author": "Yaara Shoham",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yaarash/atm-machine/issues"
+  },
+  "homepage": "https://github.com/Yaarash/atm-machine#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-generator": "^4.16.1"
+  }
+}
