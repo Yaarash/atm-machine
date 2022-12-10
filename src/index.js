@@ -51,6 +51,7 @@ function _isValidWithdrawl(withdrawlAmount) {
   return withdrawlAmount <= MAX_AMOUNT;
 }
 
+
 function calculateResult(withdrawlAmount) {
   let remain = withdrawlAmount;
   const used = {
