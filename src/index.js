@@ -17,12 +17,18 @@ app.get("/atm/withdrawal", (req, res, next) => {
   if (!_isValidWithdrawl(withdrawlAmount)) {
     return sendResponse (res, 400, 'error: Max amount for a single withdrawal is 2000');
   }
-  const result = calculateResult(withdrawlAmount);
+  try {
+    const result = calculateResult(withdrawlAmount);
   if (!result) {
     return sendResponse (res, 409, 'error: Not enough money in the ATM, please try a different amount');
   }
   console.log(map1);
   return res.send({result});
+
+  } catch (error) {
+    console.error(error);
+    return sendResponse(res, 500, 'error: Too many coins to withdraw');
+  }
 });
 
 function _initBillsCoinsMap() {
@@ -45,47 +51,54 @@ function _isValidWithdrawl(withdrawlAmount) {
   return withdrawlAmount <= MAX_AMOUNT;
 }
 
-function isTooManyCoins(usedBills, mapKeys) {
-  let sum = 0;
-  const coins = usedBills.filter(coin => coin.type === 'coin');
-  coins.forEach(coin => mapKeys.forEach(key => sum += (coin[key] || 0) ));
-  console.log(`sum is ${sum}`);
-  return sum > 50;
-}
-
 
 function calculateResult(withdrawlAmount) {
   let remain = withdrawlAmount;
-  let usedBills = [];
+  const used = {
+    "bills": [],
+    "coins": []
+  }
+  const usedBills = {}
+  const usedCoins = {}
   let mapKeys = Object.keys(map1).sort((a, b) => {return b-a});
   for(let i = 0; i < mapKeys.length; i++) {
-    let tempBillsAmount = map1[mapKeys[i]].amount;
+    let billsAvailableAmount = map1[mapKeys[i]].amount;
     const bill = Number(mapKeys[i]);
-    if (tempBillsAmount > 0 && remain >= bill) {
+    if (billsAvailableAmount > 0 && remain >= bill) {
       const bankBill = Math.floor(remain / bill);
-      const maxBillsUsed = Math.min(tempBillsAmount, bankBill)
-      const objp = { type: map1[bill].type };
-      objp[bill] = maxBillsUsed;
-      usedBills.push(objp);
-      console.log(usedBills);
+      const maxBillsUsed = Math.min(billsAvailableAmount, bankBill)
+      if (map1[bill].type === 'bill') {
+        usedBills[bill] = maxBillsUsed;
+      }
+      if (map1[bill].type === 'coin') {
+        usedCoins[bill] = maxBillsUsed;
+      }
+      console.log(`usedBillsa: ${JSON.stringify(usedBills)}`);
+      console.log(`usedCoinsa: ${JSON.stringify(usedCoins)}`);
+      used.bills = [usedBills];
+      used.coins = [usedCoins];
+      console.log(`used!! ${JSON.stringify(used)}`);
 
-      tempBillsAmount -= maxBillsUsed;
+      billsAvailableAmount -= maxBillsUsed;
       remain -= maxBillsUsed * bill;
     }
   }
 
-  if (isTooManyCoins(usedBills, mapKeys))
-  console.log(usedBills);
-  const formattedResponse = _.keyBy(usedBills, 'type');
+  if (_isTooManyCoins(used, mapKeys)){
+    throw new Error('TooMuchCoinsException');
+  }
   if (remain > 0){
     return false;
   }
-  console.log(usedBills);
-  return {
-    "bill": usedBills.filter(usedBill => usedBill.type === "bill"),
-    "coin": usedBills.filter(usedBill => usedBill.type === "coin")
-  };
-  //TODO change response format
+  return used;
+}
+
+function _isTooManyCoins(usedBills) {
+  let sum = 0;
+  const coins = Object.values(usedBills.coins[0] || 0)
+  coins.forEach(coin => sum += (coin || 0))
+  console.log(`sum is ${sum}`);
+  return sum > 50;
 }
 
 function getSortedMapKeys() {
