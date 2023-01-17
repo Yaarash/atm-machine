@@ -27,3 +27,5 @@ based on the current money that exists in the ATM.
    1. clone this repo
    2. `npm install`
    3. `npm start`
+
+   Enjoy the App!!
