@@ -15,7 +15,7 @@ My special “ATM Machine” which accepts any required amount and returns an op
 3. [ATM Machine Menu](#atm-machine-menu)
 4. [API Description](#api-description)
     1. [Withdrawal Request](#withdrawal-request)
-    2. [Add Different Currency to ATM's Inventory] (#add-different-currency-to-atms-inventory)
+    2. [Add Different Currency to ATM's Inventory](#add-different-currency-to-atms-inventory)
 
 
 ### Prerequisites:
@@ -67,20 +67,33 @@ based on the current money that exists in the ATM.
 ### Usage
 
 ## API Description:
-1. Withdrawal request should use POST `/atm/withdrawal`
-   with body : `{
-   "currency": "ILS",
-   "amount": 837.44,
-   }`
-2. Add different currency to ATM's inventory use POST `/admin/currency`
-   with body: `{
-   "currency": "USD",
-   "currency_map": { "5": { "type": "coin", "amount": 1 },
-   "10": { "type": "coin", "amount": 1 },
-   "20": {  "type": "bill", "amount": 1 },
-   "100": { "type": "bill",  "amount": 4 },
-   "200": { "type": "bill", "amount": 7 },
-   "0.1": { "type": "coin", "amount": 12 },
-   "0.01": { "type": "coin",  "amount": 21 }
-   }
-   }`
+#### Withdrawal Request
+
+Withdrawal request should use POST `/atm/withdrawal` with the following JSON body:
+
+```json
+{
+  "currency": "ILS",
+  "amount": 837.44
+}
+```
+
+#### Add Different Currency to ATM's Inventory
+
+To add different currency to the ATM's inventory, use POST /admin/currency with the following JSON body: 
+```json
+{
+  "currency": "USD",
+  "currency_map": {
+    "5": { "type": "coin", "amount": 1 },
+    "10": { "type": "coin", "amount": 1 },
+    "20": { "type": "bill", "amount": 1 },
+    "100": { "type": "bill", "amount": 4 },
+    "200": { "type": "bill", "amount": 7 },
+    "0.1": { "type": "coin", "amount": 12 },
+    "0.01": { "type": "coin", "amount": 21 }
+  }
+}
+```
+Make sure to include the appropriate currency code and amounts in the JSON request body when making API calls.
+
